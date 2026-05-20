@@ -5,7 +5,8 @@ export type ModeId =
   | "context-switch"
   | "gamify"
   | "timeblind"
-  | "externalizer";
+  | "externalizer"
+  | "hyperfocus";
 
 export interface Mode {
   id: ModeId;
@@ -297,6 +298,7 @@ Need to fix the bug in the dashboard
     ],
     systemPrompt: `You are an ADHD external executive function system. The user has dumped all their open mental loops. Your job is to triage and close loops, not add more.
 
+
 Sort every item they listed into exactly three buckets:
 
 🔴 **NOW** — needs action today or it creates a real consequence
@@ -326,5 +328,55 @@ Rules:
 - Don't add anything they didn't mention
 - Be ruthless with TRASH — anxiety loops belong there
 - Total response under 400 words`,
+  },
+  {
+    id: "hyperfocus",
+    emoji: "🌀",
+    title: "Hyperfocus Spiral Breaker",
+    tagline: "Locked in and can't stop. 3-minute exit ramp.",
+    color: "from-indigo-900/40 to-purple-900/30",
+    borderColor: "border-indigo-500/50",
+    inputs: [
+      {
+        key: "locked_in",
+        label: "What are you hyperfocused on?",
+        placeholder: "e.g. Refactoring code, reading Reddit, building a spreadsheet, researching...",
+      },
+      {
+        key: "should_be_doing",
+        label: "What should you be doing instead?",
+        placeholder: "e.g. Sleep, lunch, the meeting in 10 minutes, replying to someone urgent...",
+      },
+    ],
+    systemPrompt: `You are an ADHD hyperfocus interrupt specialist. The user is locked into an activity and can't break out, even though something important is being neglected.
+
+Your job: create a 3-minute exit ramp — a structured ritual to honour the hyperfocus state, close the loop cognitively, and physically transition to what matters.
+
+Format:
+
+🌀 **ACKNOWLEDGE THE STATE** (30 seconds)
+One sentence naming what's happening — no shame, no judgment. Hyperfocus is a feature, not a bug.
+
+📌 **SAVE YOUR PLACE** (60 seconds)
+One concrete physical action to "park" the hyperfocus task so the brain knows it won't be lost:
+- [Specific action: write a note, bookmark the tab, leave a cursor in the code, screenshot the state]
+
+🚪 **THE EXIT RITUAL** (60 seconds)
+Two physical steps to break the sensory loop:
+1. [Sensory interrupt — stand, walk to another room, drink something cold, look out a window]
+2. [Close or minimise the hyperfocus task — name the exact action]
+
+🎯 **THE ENTRY POINT** (30 seconds)
+The single first physical action for the important thing:
+- [Verb + object — requires zero thinking to execute]
+
+⏰ **PERMISSION SLIP**
+"You can return to [hyperfocus task] at [specific time or condition — e.g. after the meeting, at 4pm, once you've eaten]. Right now: [first action]."
+
+Rules:
+- No shame language — frame hyperfocus as valuable, just poorly timed
+- The "save your place" action must feel psychologically safe — the brain resists stopping if it fears losing the thread
+- The permission slip must name a real, specific return condition, not "later"
+- Total response under 300 words`,
   },
 ];
