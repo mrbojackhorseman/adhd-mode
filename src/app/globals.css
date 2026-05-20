@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --border: #1e1e2e;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d2d3d;
+  border-radius: 3px;
+}
+
+/* Markdown output formatting */
+.prose-adhd h1,
+.prose-adhd h2,
+.prose-adhd h3 {
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #f1f5f9;
+}
+.prose-adhd h1 { font-size: 1.25rem; }
+.prose-adhd h2 { font-size: 1.1rem; color: #cbd5e1; }
+.prose-adhd h3 { font-size: 1rem; }
+
+.prose-adhd p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+.prose-adhd ul,
+.prose-adhd ol {
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-adhd li {
+  margin-bottom: 0.35rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.prose-adhd strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.prose-adhd em {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.prose-adhd table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.prose-adhd th {
+  background: #1e1e2e;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  color: #94a3b8;
+  font-weight: 600;
+  border-bottom: 1px solid #2d2d3d;
+}
+
+.prose-adhd td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #1a1a2a;
+  color: #cbd5e1;
+}
+
+.prose-adhd tr:last-child td {
+  border-bottom: none;
+}
+
+.prose-adhd hr {
+  border: none;
+  border-top: 1px solid #1e1e2e;
+  margin: 1rem 0;
+}
+
+.prose-adhd code {
+  background: #1e1e2e;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #a5f3fc;
+}
+
+.prose-adhd blockquote {
+  border-left: 3px solid #3d3d5c;
+  padding-left: 1rem;
+  color: #94a3b8;
+  font-style: italic;
+  margin: 0.75rem 0;
+}
