@@ -22,14 +22,21 @@ export default function ModeSession({ mode, onBack }: Props) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const responseRef = useRef<HTMLDivElement>(null);
 
-  const isBodyDouble = mode.id === "bodydouble";
+  const totalMinutes = mode.timerMinutes ?? 40;
+  const checkInSeconds = mode.checkInAt ?? [];
+
+  useEffect(() => {
+    if (mode.defaultInputs) {
+      setInputs(mode.defaultInputs);
+    }
+  }, [mode.id]);
 
   useEffect(() => {
     if (timerActive) {
       intervalRef.current = setInterval(() => {
         setTimer((t) => {
           const next = t + 1;
-          if (next % 600 === 0) setCheckInDue(true);
+          if (checkInSeconds.includes(next)) setCheckInDue(true);
           return next;
         });
       }, 1000);
@@ -52,7 +59,7 @@ export default function ModeSession({ mode, onBack }: Props) {
   };
 
   const minutesElapsed = Math.floor(timer / 60);
-  const minutesLeft = 30 - minutesElapsed;
+  const minutesLeft = totalMinutes - minutesElapsed;
 
   const submit = async (extraInputs?: Record<string, string>) => {
     const isInitialSubmit = !extraInputs;
@@ -93,7 +100,7 @@ export default function ModeSession({ mode, onBack }: Props) {
         });
       }
 
-      if (isBodyDouble && isInitialSubmit) {
+      if (mode.hasTimer && isInitialSubmit) {
         setTimerActive(true);
       }
     } finally {
@@ -102,7 +109,7 @@ export default function ModeSession({ mode, onBack }: Props) {
   };
 
   const reset = () => {
-    setInputs({});
+    setInputs(mode.defaultInputs ?? {});
     setResponse("");
     setSubmitted(false);
     setLoading(false);
@@ -111,7 +118,13 @@ export default function ModeSession({ mode, onBack }: Props) {
     setCheckInDue(false);
   };
 
-  const allFilled = mode.inputs.every((f) => inputs[f.key]?.trim());
+  const allFilled = mode.inputs.every(
+    (f) => f.optional || inputs[f.key]?.trim()
+  );
+
+  const checkInField =
+    mode.checkInField ??
+    (mode.inputs.find((f) => f.key === "task")?.key ?? mode.inputs[0]?.key ?? "task");
 
   return (
     <div className="session-container min-h-screen flex flex-col bg-slate-50 dark:bg-[#0a0a0f]">
@@ -130,7 +143,7 @@ export default function ModeSession({ mode, onBack }: Props) {
           <span className="text-sm font-medium text-gray-800 dark:text-slate-200">{mode.title}</span>
         </div>
 
-        {isBodyDouble && timerActive && (
+        {mode.hasTimer && timerActive && (
           <div
             className={`flex items-center gap-2 text-sm font-mono px-3 py-1.5 rounded-full border ${
               checkInDue
@@ -148,7 +161,7 @@ export default function ModeSession({ mode, onBack }: Props) {
           </div>
         )}
 
-        {!isBodyDouble && <div className="w-20" />}
+        {!mode.hasTimer && <div className="w-20" />}
       </div>
 
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full px-5 py-8 gap-6">
@@ -161,6 +174,9 @@ export default function ModeSession({ mode, onBack }: Props) {
               <div key={field.key} className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-slate-300">
                   {field.label}
+                  {field.optional && (
+                    <span className="ml-2 text-xs text-slate-500 font-normal">(optional)</span>
+                  )}
                 </label>
                 {field.multiline ? (
                   <textarea
@@ -223,14 +239,15 @@ export default function ModeSession({ mode, onBack }: Props) {
           </div>
         )}
 
-        {/* Body double check-in prompt */}
-        {isBodyDouble && checkInDue && submitted && (
+        {/* Check-in prompt (timer modes only) */}
+        {mode.hasTimer && checkInDue && submitted && (
           <CheckIn
             minutesElapsed={minutesElapsed}
+            minutesLeft={minutesLeft}
             onSubmit={(update) => {
               submit({
                 ...inputs,
-                task: `${inputs.task}\n\n---\n[CHECK-IN at ${minutesElapsed} min]\nUser update: ${update}\nTime remaining: ~${minutesLeft} minutes`,
+                [checkInField]: `${inputs[checkInField]}\n\n---\n[CHECK-IN at ${minutesElapsed} min]\nUser update: ${update}\nTime remaining: ~${minutesLeft} minutes`,
               });
             }}
           />
@@ -253,9 +270,11 @@ export default function ModeSession({ mode, onBack }: Props) {
 
 function CheckIn({
   minutesElapsed,
+  minutesLeft,
   onSubmit,
 }: {
   minutesElapsed: number;
+  minutesLeft: number;
   onSubmit: (update: string) => void;
 }) {
   const [update, setUpdate] = useState("");
@@ -263,7 +282,7 @@ function CheckIn({
   return (
     <div className="rounded-2xl border border-orange-500/40 bg-orange-500/10 p-5 space-y-3 animate-slide-up">
       <p className="text-orange-600 dark:text-orange-300 font-medium text-sm">
-        ⏰ {minutesElapsed}-minute check-in
+        ⏰ {minutesElapsed}-minute check-in · {minutesLeft}m remaining
       </p>
       <textarea
         className="session-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-slate-200 text-sm placeholder:text-slate-600 focus:outline-none focus:border-white/20 transition-all resize-none min-h-[80px]"
