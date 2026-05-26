@@ -1,4 +1,7 @@
-export const PLAN_START = new Date("2026-04-19T00:00:00");
+export const PLAN_START   = new Date("2026-04-19T00:00:00");
+export const PLAN_END     = new Date("2026-07-17T23:59:59");
+export const DAY_75_DATE  = new Date(PLAN_START.getTime() + 74 * 24 * 60 * 60 * 1000);
+export const PLAN_TOTAL   = 90;
 
 export type Phase = 1 | 2 | 3;
 
@@ -72,6 +75,35 @@ export interface MissionSummary {
   phaseName: string;
   subject: string;
   task: string;
+}
+
+export interface Countdown {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  past: boolean;
+}
+
+export function getDaysUntil(target: Date): Countdown {
+  const diff        = target.getTime() - Date.now();
+  const past        = diff < 0;
+  const total       = Math.floor(Math.abs(diff) / 1000);
+  return {
+    past,
+    days:    Math.floor(total / 86400),
+    hours:   Math.floor((total % 86400) / 3600),
+    minutes: Math.floor((total % 3600) / 60),
+    seconds: total % 60,
+  };
+}
+
+export function getPhaseProgress(): { dayInPhase: number; totalInPhase: number } {
+  const day   = getPlanDay();
+  const phase = getPhase(day);
+  if (phase === 1) return { dayInPhase: day,      totalInPhase: 30 };
+  if (phase === 2) return { dayInPhase: day - 30, totalInPhase: 30 };
+  return               { dayInPhase: day - 60, totalInPhase: 30 };
 }
 
 export function getMissionSummary(): MissionSummary {

@@ -5,13 +5,14 @@ import { MODES, Mode } from "@/lib/modes";
 import { getMissionSummary } from "@/lib/plan";
 import ThemeToggle from "./ThemeToggle";
 import History from "./History";
+import Timers from "./Timers";
 
 interface Props {
   onSelect: (mode: Mode) => void;
 }
 
 export default function Dashboard({ onSelect }: Props) {
-  const [tab, setTab] = useState<"modes" | "history">("modes");
+  const [tab, setTab] = useState<"modes" | "history" | "timers">("modes");
   const mission = getMissionSummary();
 
   const handleModeSelect = (mode: Mode) => {
@@ -76,29 +77,22 @@ export default function Dashboard({ onSelect }: Props) {
 
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-gray-100 dark:bg-white/5 rounded-xl p-1">
-          <button
-            onClick={() => setTab("modes")}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-              tab === "modes"
-                ? "bg-white dark:bg-white/10 text-gray-900 dark:text-slate-100 shadow-sm"
-                : "text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Modes
-          </button>
-          <button
-            onClick={() => setTab("history")}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-              tab === "history"
-                ? "bg-white dark:bg-white/10 text-gray-900 dark:text-slate-100 shadow-sm"
-                : "text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300"
-            }`}
-          >
-            History
-          </button>
+          {(["modes", "timers", "history"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all capitalize ${
+                tab === t
+                  ? "bg-white dark:bg-white/10 text-gray-900 dark:text-slate-100 shadow-sm"
+                  : "text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
         </div>
 
-        {tab === "modes" ? (
+        {tab === "modes" && (
           <div className="space-y-3">
             {MODES.map((mode) => (
               <button
@@ -128,9 +122,9 @@ export default function Dashboard({ onSelect }: Props) {
               </button>
             ))}
           </div>
-        ) : (
-          <History />
         )}
+        {tab === "timers"  && <Timers />}
+        {tab === "history" && <History />}
 
         <p className="text-center text-gray-300 dark:text-slate-700 text-xs mt-10">
           Built for Godfrey · 90-Day Plan
