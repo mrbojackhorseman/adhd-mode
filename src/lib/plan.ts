@@ -85,8 +85,8 @@ export interface Countdown {
   past: boolean;
 }
 
-export function getDaysUntil(target: Date): Countdown {
-  const diff        = target.getTime() - Date.now();
+export function getDaysUntil(target: Date, from: Date = new Date()): Countdown {
+  const diff        = target.getTime() - from.getTime();
   const past        = diff < 0;
   const total       = Math.floor(Math.abs(diff) / 1000);
   return {
